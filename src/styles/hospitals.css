@@ -1,0 +1,91 @@
+.hospital-page {
+  padding: 140px 80px 60px;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #ffffff;
+}
+
+/* TOP BAR */
+.hospital-top {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+.search-box {
+  flex: 1;
+  padding: 16px 22px;
+  border-radius: 35px;
+  border: 1.5px solid #c0c0c0;
+  font-size: 16px;
+}
+
+.nearest-btn {
+  padding: 16px 26px;
+  border-radius: 22px;
+  border: none;
+  background-color: #d9ffce;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* CARD */
+.hospital-card {
+  background-color: #ffffff;
+  border-radius: 30px;
+  padding: 28px;
+  margin-bottom: 36px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* ROW */
+.hospital-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* INFO */
+.hospital-info h2 {
+  font-size: 30px;
+  margin-bottom: 6px;
+}
+
+.hospital-info span {
+  font-size: 16px;
+  color: #444;
+}
+
+/* ACTIONS */
+.hospital-actions {
+  display: flex;
+  gap: 18px;
+}
+
+.doctor-btn {
+  background-color: #ced0ff;
+  padding: 14px 22px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.route-btn {
+  background-color: #ffe3ce;
+  padding: 14px 22px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* DESCRIPTION */
+.hospital-desc {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1.5px solid #d6d6d6;
+  background-color: #fafafa;
+  font-size: 15px;
+}

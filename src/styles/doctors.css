@@ -1,0 +1,90 @@
+.doctor-page {
+  padding: 140px 80px 60px;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+/* Hospital name */
+.hospital-title {
+  font-size: 44px;
+  margin-bottom: 70px;
+}
+
+/* Doctor cards grid */
+.doctor-grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+/* Individual card */
+.doctor-card {
+  width: 300px;
+  background-color: #ffffff;
+  border-radius: 26px;
+  padding: 80px 25px 35px;
+  position: relative;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-8px);
+}
+
+/* Profile image container */
+.doctor-img {
+  position: absolute;
+  top: -55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile image */
+.doctor-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Doctor name */
+.doctor-card h2 {
+  font-size: 26px;
+  margin-top: 20px;
+}
+
+/* Field */
+.doctor-card p {
+  font-size: 18px;
+  margin: 10px 0 25px;
+  color: #333;
+}
+
+/* Book button */
+.book-btn {
+  background-color: #f7f1ac;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 18px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.book-btn:hover {
+  transform: scale(1.05);
+}

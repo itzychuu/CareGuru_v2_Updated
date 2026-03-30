@@ -1,0 +1,96 @@
+.profile-edit-page {
+  padding: 140px 80px;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+/* AVATAR */
+.edit-avatar {
+  position: relative;
+  margin-bottom: 50px;
+}
+
+.edit-avatar-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 6px solid #39d102;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  background-color: #f2f2f2;
+  overflow: hidden;
+}
+
+.edit-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-avatar-circle span {
+  font-size: 90px;
+}
+
+.camera-upload {
+  position: absolute;
+  bottom: 8px;
+  right: calc(50% - 110px);
+  background-color: white;
+  border-radius: 50%;
+  border: 2px solid red;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FORM */
+.edit-form {
+  width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.form-row label {
+  width: 120px;
+  font-size: 20px;
+  text-align: right;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 12px 18px;
+  border-radius: 22px;
+  border: 1.5px solid #c0c0c0;
+  font-size: 16px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* SAVE BUTTON */
+.save-btn {
+  margin-top: 40px;
+  align-self: center;
+  background-color: #2fa800;
+  color: white;
+  padding: 14px 36px;
+  border-radius: 26px;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
