@@ -179,15 +179,14 @@ button, input, select, textarea {
   height: 85vh;
   width: 100%;
   background-size: cover;
-  background-position: center;
   border-radius: 0 0 60px 60px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Changed from center to prevent bottom overlap */
   align-items: center;
   text-align: center;
   color: white;
-  padding: 0 20px;
+  padding: 160px 20px 0; /* Extra top padding to center visually but keep bottom clear */
 }
 
 .hero h1 {
@@ -204,9 +203,9 @@ button, input, select, textarea {
 
 /* SOS Button */
 .sos-btn {
-  margin-top: 40px;
-  padding: 20px 80px;
-  font-size: 32px;
+  margin-top: 50px;
+  padding: 18px 60px; /* Refined size */
+  font-size: 28px;
   font-weight: 800;
   color: white;
   background: linear-gradient(135deg, #ff416c, #ff4b2b);
@@ -230,8 +229,8 @@ button, input, select, textarea {
 .cards {
   display: flex;
   justify-content: center;
-  gap: 150px;
-  margin-top: -120px;
+  gap: 80px; /* Reduced from 150px for better fit */
+  margin-top: -80px; /* Subtle overlap instead of deep overlap */
   padding: 0 40px 100px;
   position: relative;
   z-index: 5;
