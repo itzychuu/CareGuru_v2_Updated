@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC8a9cbbsOfeW5Gto61KXJr-6k7uhToANs",
-  authDomain: "careguru-updated.firebaseapp.com",
-  projectId: "careguru-updated",
-  storageBucket: "careguru-updated.firebasestorage.app",
-  messagingSenderId: "1049838951999",
-  appId: "1:1049838951999:web:5ba0b10ec1878e8582a28a",
-  measurementId: "G-XD13CJ50KJ"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
