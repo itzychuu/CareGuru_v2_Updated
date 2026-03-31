@@ -160,8 +160,14 @@ export const bookTicket = async (bookingInfo) => {
       // 4. If booked via app, update user's appointments array
       if (userId && source === "app") {
         const userRef = doc(db, "users", userId);
+        // Firestore doesn't allow serverTimestamp() inside arrayUnion
+        const userData = { 
+          ...appointmentData, 
+          timestamp: new Date().toISOString(), 
+          id: appointmentRef.id 
+        };
         transaction.update(userRef, {
-          appointments: arrayUnion({ ...appointmentData, id: appointmentRef.id })
+          appointments: arrayUnion(userData)
         });
       }
 

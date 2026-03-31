@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import "../styles/bookappointment.css";
 
-import { collection, addDoc, doc, setDoc, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { bookTicket } from "../services/ticketService";
