@@ -2,33 +2,30 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/profile.css";
-import { signInWithPopup, signOut } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 function Profile() {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, role, loading } = useAuth();
 
   const [profileData, setProfileData] = useState(null);
 
-  // ✅ Fetch profile from Firestore
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
-
       try {
         const snap = await getDoc(doc(db, "users", user.uid));
         if (snap.exists()) {
-          setProfileData(snap.data().profile || {});
+          setProfileData(snap.data());
         }
       } catch (err) {
         console.error("Failed to fetch profile:", err);
       }
     };
-
     fetchProfile();
   }, [user]);
 
@@ -42,6 +39,23 @@ function Profile() {
     return <div style={{ padding: "150px" }}>Loading...</div>;
   }
 
+  const isHospital = role === "hospital";
+
+  // Info cards differ by role
+  const infoCards = isHospital
+    ? [
+        { label: "Hospital Name", value: profileData?.hospitalName, icon: "🏥" },
+        { label: "Address",       value: profileData?.address,      icon: "📍" },
+        { label: "Phone",         value: profileData?.profile?.contact, icon: "📞" },
+        { label: "Description",   value: profileData?.description,  icon: "📋" }
+      ]
+    : [
+        { label: "Age",          value: profileData?.profile?.age,        icon: "🎂" },
+        { label: "Gender",       value: profileData?.profile?.gender,     icon: "⚧" },
+        { label: "Blood Group",  value: profileData?.profile?.bloodGroup, icon: "🩸" },
+        { label: "Contact No",   value: profileData?.profile?.contact,    icon: "📞" }
+      ];
+
   return (
     <>
       <Navbar />
@@ -50,7 +64,9 @@ function Profile() {
         
         {/* Profile Header / Actions */}
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px" }}>
-          <h1 style={{ fontSize: "32px", color: "var(--primary)" }}>My Profile</h1>
+          <h1 style={{ fontSize: "32px", color: "var(--primary)" }}>
+            {isHospital ? "Hospital Profile" : "My Profile"}
+          </h1>
           {user && (
             <button
               className="nav-btn"
@@ -76,31 +92,28 @@ function Profile() {
           {/* Avatar Section */}
           <div style={{ width: "150px", height: "150px", borderRadius: "50%", padding: "5px", background: "linear-gradient(135deg, var(--primary), var(--secondary))", boxShadow: "var(--shadow-lg)", marginBottom: "30px" }}>
             <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "white", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {profileData?.image ? (
-                <img src={profileData?.image} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              {profileData?.profile?.image ? (
+                <img src={profileData.profile.image} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : user?.photoURL ? (
                 <img src={user.photoURL} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <span style={{ fontSize: "60px" }}>👤</span>
+                <span style={{ fontSize: "60px" }}>{isHospital ? "🏥" : "👤"}</span>
               )}
             </div>
           </div>
 
-          <h2 style={{ fontSize: "28px", color: "var(--text-main)", marginBottom: "5px" }}>{user?.displayName || "User Name"}</h2>
+          <h2 style={{ fontSize: "28px", color: "var(--text-main)", marginBottom: "5px" }}>
+            {isHospital ? (profileData?.hospitalName || "Hospital Name") : (user?.displayName || "User Name")}
+          </h2>
           <p style={{ color: "var(--primary)", fontWeight: "600", marginBottom: "40px" }}>{user?.email}</p>
 
           {/* Info Grid */}
           <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "25px", borderTop: "1.5px solid #f1f5f9", paddingTop: "40px" }}>
-            {[
-              { label: "Age", value: profileData?.age, icon: "🎂" },
-              { label: "Gender", value: profileData?.gender, icon: "⚧" },
-              { label: "Blood Group", value: profileData?.bloodGroup, icon: "🩸" },
-              { label: "Contact No", value: profileData?.contact, icon: "📞" }
-            ].map((item, i) => (
+            {infoCards.map((item, i) => (
               <div key={i} style={{ padding: "20px", background: "#f8fafc", borderRadius: "var(--radius-md)", border: "1px solid #f1f5f9", textAlign: "center" }}>
                 <p style={{ fontSize: "24px", marginBottom: "10px" }}>{item.icon}</p>
                 <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "5px" }}>{item.label}</p>
-                <p style={{ fontSize: "18px", color: "var(--text-main)", fontWeight: "700" }}>{item.value || "—"}</p>
+                <p style={{ fontSize: item.label === "Description" ? "14px" : "18px", color: "var(--text-main)", fontWeight: "700" }}>{item.value || "—"}</p>
               </div>
             ))}
           </div>
@@ -111,3 +124,4 @@ function Profile() {
 }
 
 export default Profile;
+

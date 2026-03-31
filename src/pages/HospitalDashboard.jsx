@@ -254,6 +254,10 @@ function HospitalDashboard() {
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600" }}>Doctor's Full Name</label>
                 <input type="text" placeholder="Dr. John Doe" value={newDoctor.name} onChange={(e) => setNewDoctor({ ...newDoctor, name: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />
               </div>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600" }}>Specialization</label>
+                <input type="text" placeholder="e.g. Cardiologist, Orthopedic..." value={newDoctor.specialization} onChange={(e) => setNewDoctor({ ...newDoctor, specialization: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />
+              </div>
               <div style={{ marginBottom: "30px" }}>
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600" }}>Daily Patient Capacity</label>
                 <input type="number" placeholder="20" value={newDoctor.dailyCapacity} onChange={(e) => setNewDoctor({ ...newDoctor, dailyCapacity: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />

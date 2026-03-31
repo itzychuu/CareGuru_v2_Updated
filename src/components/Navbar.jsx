@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
+import CareGuruIcon from "../assets/CareGuruIcon.png";
 
 function Navbar({ variant = "dark" }) {
   const navigate = useNavigate();
@@ -46,7 +47,10 @@ function Navbar({ variant = "dark" }) {
       <nav className="navbar">
         {/* LOGO / BRAND (Optional, can just be 'Home' for now) */}
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          <Link to="/" style={{ fontSize: "20px", fontWeight: "800", color: "var(--primary)", opacity: 1, padding: 0 }}>CareGuru</Link>
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "20px", fontWeight: "800", color: "var(--primary)", opacity: 1, padding: 0, textDecoration: "none" }}>
+            <img src={CareGuruIcon} alt="CareGuru Logo" style={{ width: "120px", height: "120px", objectFit: "contain", borderRadius: "8px" }} />
+            CareGuru
+          </Link>
           
           <div style={{ display: "flex", gap: "10px", marginLeft: "20px" }}>
             <Link to="/">Home</Link>

@@ -7,8 +7,6 @@ import {
   updateDoc, 
   doc, 
   runTransaction, 
-  orderBy, 
-  limit,
   serverTimestamp,
   arrayUnion,
   getDoc,
@@ -105,6 +103,22 @@ export const bookTicket = async (bookingInfo) => {
   } = bookingInfo;
 
   try {
+    // Before the transaction: check if tickets exist at all for this doctor+date.
+    // If none have ever been generated (new doctor), auto-generate them now.
+    const allTicketsQ = query(
+      collection(db, "opTickets"),
+      where("doctorId", "==", doctorId),
+      where("date", "==", date)
+    );
+    const allTicketsSnap = await getDocs(allTicketsQ);
+
+    if (allTicketsSnap.empty) {
+      // Fetch doctor's daily capacity and auto-generate tickets
+      const doctorSnap = await getDoc(doc(db, "doctors", doctorId));
+      const capacity = doctorSnap.exists() ? (doctorSnap.data().dailyCapacity || 20) : 20;
+      await generateDailyTickets(doctorId, hospitalId, date, capacity);
+    }
+
     return await runTransaction(db, async (transaction) => {
       // 1. Find all available tickets (without orderBy to avoid index)
       const ticketsRef = collection(db, "opTickets");
@@ -117,7 +131,7 @@ export const bookTicket = async (bookingInfo) => {
       
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
-        throw new Error("No tickets available for this doctor on selected date.");
+        throw new Error("This doctor is fully booked for today. Please try another date.");
       }
 
       // 2. Pick the first one (lowest ticket number) in memory
