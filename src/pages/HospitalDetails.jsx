@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { db } from "../firebase";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { getTicketStats } from "../services/ticketService";
 import "../styles/doctors.css";
 
 function HospitalDetails() {
@@ -39,7 +40,13 @@ function HospitalDetails() {
         where("isAvailable", "==", true)
       );
       const querySnapshot = await getDocs(q);
-      const docsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const docsData = await Promise.all(querySnapshot.docs.map(async (doctorDoc) => {
+        const dData = doctorDoc.data();
+        // Fetch ticket stats
+        const date = new Date().toISOString().split('T')[0];
+        const stats = await getTicketStats(doctorDoc.id, date);
+        return { id: doctorDoc.id, ...dData, stats };
+      }));
       setDoctors(docsData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -108,7 +115,17 @@ function HospitalDetails() {
                 </div>
 
                 <h3 style={{ fontSize: "22px", color: "var(--primary)", marginBottom: "5px" }}>{doctor.name}</h3>
-                <p className="badge badge-info" style={{ marginBottom: "20px", textTransform: "none", fontSize: "12px" }}>{doctor.specialization}</p>
+                <p className="badge badge-info" style={{ marginBottom: "5px", textTransform: "none", fontSize: "12px" }}>{doctor.specialization}</p>
+                
+                <div style={{ marginBottom: "15px" }}>
+                  {doctor.stats?.isGenerated ? (
+                    <span style={{ fontSize: "13px", fontWeight: "700", color: doctor.stats.available > 0 ? "var(--success)" : "var(--danger)" }}>
+                      {doctor.stats.available > 0 ? `🎟️ ${doctor.stats.available} Tickets Left` : "🚫 Fully Booked"}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>⏳ OP Not Started</span>
+                  )}
+                </div>
 
                 <p style={{ fontSize: "14px", color: "var(--text-muted)", marginBottom: "25px", minHeight: "60px", lineHeight: "1.5" }}>
                   Expert in {doctor.specialization.toLowerCase()} with years of dedicated clinical experience.
@@ -116,7 +133,14 @@ function HospitalDetails() {
 
                 <button
                   className="nav-btn"
-                  style={{ width: "100%", background: "var(--primary)", color: "white", border: "none" }}
+                  style={{ 
+                    width: "100%", 
+                    background: (doctor.stats?.available > 0) ? "var(--primary)" : "#cbd5e1", 
+                    color: "white", 
+                    border: "none",
+                    cursor: (doctor.stats?.available > 0) ? "pointer" : "not-allowed"
+                  }}
+                  disabled={!(doctor.stats?.available > 0)}
                   onClick={() =>
                     navigate("/book-appointment", {
                       state: { 
@@ -127,7 +151,7 @@ function HospitalDetails() {
                     })
                   }
                 >
-                  Book Appointment
+                  {doctor.stats?.available > 0 ? "Book Appointment" : "Fully Booked"}
                 </button>
               </div>
             ))

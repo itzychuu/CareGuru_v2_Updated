@@ -6,6 +6,7 @@ import "../styles/bookappointment.css";
 import { collection, addDoc, doc, setDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
+import { bookTicket } from "../services/ticketService";
 
 function BookAppointment() {
   const { user } = useAuth();
@@ -46,40 +47,27 @@ function BookAppointment() {
       return;
     }
 
-    const ticketId = "OP-" + Math.floor(100000 + Math.random() * 900000);
-    const bookingTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const appointmentData = {
-      userId: user.uid,
-      patientName: user.displayName || user.email.split('@')[0],
-      hospitalId: location.state?.hospitalId || null,
-      doctorId: doctor.id,
-      doctorName: doctor.name,
-      hospitalName: hospitalName,
-      specialization: doctor.specialization || doctor.field,
-      date: new Date().toLocaleDateString(),
-      bookingTime: bookingTime,
-      status: "booked",
-      paymentMethod,
-      ticketId: ticketId,
-      timestamp: new Date()
-    };
-
     try {
-      // 1. Save to global 'appointments' collection
-      await addDoc(collection(db, "appointments"), appointmentData);
+      const date = new Date().toISOString().split('T')[0];
 
-      // 2. Also update user's local appointments array for legacy UI support
-      const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, {
-        appointments: arrayUnion(appointmentData)
-      }, { merge: true });
+      const result = await bookTicket({
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        hospitalId: location.state?.hospitalId || null,
+        hospitalName: hospitalName,
+        specialization: doctor.specialization || doctor.field,
+        date: date,
+        userId: user.uid,
+        patientName: user.displayName || user.email.split('@')[0],
+        source: "app",
+        paymentMethod: paymentMethod
+      });
 
-      alert(`Appointment booked successfully! Your Ticket ID is ${ticketId}`);
+      alert(`Appointment booked successfully! Your Ticket ID is ${result.ticketId}`);
       navigate("/appointments");
     } catch (error) {
       console.error("Booking error:", error);
-      alert("Failed to book appointment");
+      alert(error.message || "Failed to book appointment");
     }
   };
 

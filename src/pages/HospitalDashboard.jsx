@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { db } from "../firebase";
 import { collection, addDoc, query, where, getDocs, updateDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
 import Navbar from "../components/Navbar";
+import { generateDailyTickets, bookTicket } from "../services/ticketService";
 import "../styles/main.css";
 
 function HospitalDashboard() {
@@ -14,9 +15,10 @@ function HospitalDashboard() {
     description: "",
     mapsUrl: ""
   });
-  const [newDoctor, setNewDoctor] = useState({ name: "", specialization: "" });
+  const [newDoctor, setNewDoctor] = useState({ name: "", specialization: "", dailyCapacity: 20 });
   const [loading, setLoading] = useState(true);
   const [editingProfile, setEditingProfile] = useState(false);
+  const [localCapacities, setLocalCapacities] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -58,6 +60,13 @@ function HospitalDashboard() {
       const querySnapshot = await getDocs(q);
       const docsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setDoctors(docsData);
+      
+      // Initialize local capacities
+      const caps = {};
+      docsData.forEach(dr => {
+        caps[dr.id] = dr.dailyCapacity || 20;
+      });
+      setLocalCapacities(caps);
     } catch (error) {
       console.error("Error fetching doctors:", error);
     } finally {
@@ -89,9 +98,10 @@ function HospitalDashboard() {
       await addDoc(collection(db, "doctors"), {
         ...newDoctor,
         hospitalId: user.uid,
-        isAvailable: true
+        isAvailable: true,
+        dailyCapacity: parseInt(newDoctor.dailyCapacity) || 0
       });
-      setNewDoctor({ name: "", specialization: "" });
+      setNewDoctor({ name: "", specialization: "", dailyCapacity: 20 });
       fetchDoctors();
     } catch (error) {
       console.error("Error adding doctor:", error);
@@ -105,6 +115,62 @@ function HospitalDashboard() {
       fetchDoctors();
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  const updateCapacity = async (doctorId, newCapacity) => {
+    try {
+      const q = query(collection(db, "opTickets"), where("doctorId", "==", doctorId), where("status", "==", "booked"));
+      const snapshot = await getDocs(q);
+      const bookedCount = snapshot.docs.length;
+
+      if (newCapacity < bookedCount) {
+        alert(`Warning: Conflicting state. Cannot reduce capacity below ${bookedCount} already booked tickets.`);
+        return;
+      }
+
+      await updateDoc(doc(db, "doctors", doctorId), { dailyCapacity: parseInt(newCapacity) });
+      fetchDoctors();
+      alert("Capacity updated successfully!");
+    } catch (error) {
+      console.error("Error updating capacity:", error);
+    }
+  };
+
+  const handleGenerateTickets = async (doctorId, hospitalId, capacity) => {
+    const date = new Date().toISOString().split('T')[0];
+    try {
+      const result = await generateDailyTickets(doctorId, hospitalId, date, capacity);
+      if (result.count > 0) {
+        alert(`${result.count} new available tickets added! Total today: ${capacity}`);
+      } else {
+        alert(`No new tickets added. Existing tickets at capacity ${capacity}.`);
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleManualBooking = async (doctor, source) => {
+    const patientName = prompt(`Enter Patient Name for ${source} registration:`);
+    if (!patientName) return;
+
+    try {
+      const date = new Date().toISOString().split('T')[0];
+      await bookTicket({
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        hospitalId: user.uid,
+        hospitalName: hospitalProfile.hospitalName,
+        specialization: doctor.specialization,
+        date: date,
+        patientName: patientName,
+        source: source,
+        paymentMethod: "At Counter"
+      });
+      alert(`Successfully booked ${source} ticket for ${patientName}`);
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -189,8 +255,8 @@ function HospitalDashboard() {
                 <input type="text" placeholder="Dr. John Doe" value={newDoctor.name} onChange={(e) => setNewDoctor({ ...newDoctor, name: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />
               </div>
               <div style={{ marginBottom: "30px" }}>
-                <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600" }}>Specialization</label>
-                <input type="text" placeholder="e.g., Cardiologist" value={newDoctor.specialization} onChange={(e) => setNewDoctor({ ...newDoctor, specialization: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />
+                <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600" }}>Daily Patient Capacity</label>
+                <input type="number" placeholder="20" value={newDoctor.dailyCapacity} onChange={(e) => setNewDoctor({ ...newDoctor, dailyCapacity: e.target.value })} style={{ width: "100%", padding: "14px 20px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "white", outline: "none" }} />
               </div>
               <button type="submit" className="nav-btn" style={{ width: "100%", background: "var(--primary)", color: "white", border: "none" }}>Add Specialist</button>
             </form>
@@ -207,8 +273,9 @@ function HospitalDashboard() {
                   <thead>
                     <tr style={{ textAlign: "left", color: "var(--text-muted)", fontSize: "13px", textTransform: "uppercase", letterSpacing: "1px" }}>
                       <th style={{ padding: "0 10px" }}>Doctor</th>
+                      <th style={{ padding: "0 10px" }}>Capacity</th>
                       <th style={{ padding: "0 10px" }}>Status</th>
-                      <th style={{ padding: "0 10px", textAlign: "right" }}>Actions</th>
+                      <th style={{ padding: "0 10px", textAlign: "right" }}>OP Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -219,18 +286,35 @@ function HospitalDashboard() {
                           <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{docItem.specialization}</p>
                         </td>
                         <td style={{ padding: "15px 10px", background: "white", border: "1px solid #f1f5f9", borderLeft: "none", borderRight: "none" }}>
+                          <input 
+                            type="number" 
+                            value={localCapacities[docItem.id] || ""} 
+                            onChange={(e) => setLocalCapacities({ ...localCapacities, [docItem.id]: e.target.value })}
+                            onBlur={(e) => updateCapacity(docItem.id, e.target.value)}
+                            style={{ width: "60px", padding: "8px", borderRadius: "8px", border: "1.5px solid #e2e8f0" }}
+                          />
+                        </td>
+                        <td style={{ padding: "15px 10px", background: "white", border: "1px solid #f1f5f9", borderLeft: "none", borderRight: "none" }}>
                           <button 
                             onClick={() => toggleAvailability(docItem.id, docItem.isAvailable)} 
                             className={`badge ${docItem.isAvailable ? "badge-success" : "badge-neutral"}`}
                             style={{ border: "none", cursor: "pointer", transition: "var(--transition)" }}
                           >
-                            {docItem.isAvailable ? "Available" : "On Leave"}
+                            {docItem.isAvailable ? "Online" : "Off"}
                           </button>
                         </td>
                         <td style={{ padding: "15px 10px", background: "white", borderRadius: "0 12px 12px 0", border: "1px solid #f1f5f9", borderLeft: "none", textAlign: "right" }}>
-                          <button onClick={() => handleDeleteDoctor(docItem.id)} style={{ color: "var(--danger)", background: "none", border: "none", cursor: "pointer", fontSize: "18px", fontWeight: "bold" }} title="Remove Expert">
-                            🗑️
-                          </button>
+                          <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", flexWrap: "wrap" }}>
+                            <button onClick={() => handleGenerateTickets(docItem.id, user.uid, parseInt(localCapacities[docItem.id] || 20))} style={{ fontSize: "11px", background: "#f1f5f9", border: "none", padding: "6px 10px", borderRadius: "8px", cursor: "pointer" }} title="Generate Today's Queue">
+                              📅 Run OP
+                            </button>
+                            <button onClick={() => handleManualBooking(docItem, "walk-in")} style={{ fontSize: "11px", background: "#f1f5f9", border: "none", padding: "6px 10px", borderRadius: "8px", cursor: "pointer" }} title="Manual Entry">
+                              🚶 Walk
+                            </button>
+                            <button onClick={() => handleDeleteDoctor(docItem.id)} style={{ color: "var(--danger)", background: "none", border: "none", cursor: "pointer", fontSize: "16px" }} title="Delete Doctor">
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
