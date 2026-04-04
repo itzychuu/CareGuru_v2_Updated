@@ -48,7 +48,7 @@ function Navbar({ variant = "dark" }) {
         {/* LOGO / BRAND (Optional, can just be 'Home' for now) */}
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "20px", fontWeight: "800", color: "var(--primary)", opacity: 1, padding: 0, textDecoration: "none" }}>
-            <img src={CareGuruIcon} alt="CareGuru Logo" style={{ width: "120px", height: "120px", objectFit: "contain", borderRadius: "8px" }} />
+            <img src={CareGuruIcon} alt="CareGuru Logo" style={{ width: "52px", height: "52px", objectFit: "contain", borderRadius: "8px" }} />
             CareGuru
           </Link>
           

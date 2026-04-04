@@ -73,13 +73,14 @@ button, input, select, textarea {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--shadow-sm);
   padding: 0 40px;
   height: 80px;
+  overflow: hidden; /* Prevent oversized children from breaking layout */
 }
 
 /* ======================================================
@@ -176,17 +177,21 @@ button, input, select, textarea {
 ====================================================== */
 
 .hero {
-  height: 85vh;
+  /* Use svh (small viewport height) so mobile browser chrome doesn't cause layout gaps */
+  height: 85svh;
+  height: 85vh; /* Fallback for older browsers */
+  min-height: 500px;
   width: 100%;
   background-size: cover;
+  background-attachment: scroll; /* 'fixed' breaks on iOS Safari */
   border-radius: 0 0 60px 60px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Changed from center to prevent bottom overlap */
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   color: white;
-  padding: 160px 20px 0; /* Extra top padding to center visually but keep bottom clear */
+  padding: 140px 20px 60px;
 }
 
 .hero h1 {
@@ -229,9 +234,9 @@ button, input, select, textarea {
 .cards {
   display: flex;
   justify-content: center;
-  gap: 80px; /* Reduced from 150px for better fit */
-  margin-top: -80px; /* Subtle overlap instead of deep overlap */
-  padding: 0 40px 100px;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 60px 40px 100px; /* Positive padding — no negative margin that can break on Vercel */
   position: relative;
   z-index: 5;
 }
@@ -334,21 +339,27 @@ button, input, select, textarea {
 
 @media (max-width: 1100px) {
   .cards {
-    gap: 40px;
-    flex-wrap: wrap;
-    margin-top: -60px;
+    gap: 30px;
   }
 }
 
 @media (max-width: 768px) {
-  .nav-wrapper { top: 10px; }
-  .navbar { padding: 10px 20px; }
+  .nav-wrapper {
+    height: 70px;
+    padding: 0 20px;
+  }
   .navbar a { display: none; } /* Hide links on mobile for simplicity */
-  
-  .hero { height: 70vh; border-radius: 0 0 40px 40px; }
+
+  .hero {
+    height: 80svh;
+    height: 80vh;
+    min-height: 420px;
+    border-radius: 0 0 40px 40px;
+    padding: 110px 20px 50px;
+  }
   .hero h1 { font-size: 36px; }
-  
-  .cards { margin-top: 40px; }
+
+  .cards { padding: 40px 20px 80px; }
   .card { width: 100%; max-width: 350px; height: 350px; }
 }
 
