@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
-import CareGuruIcon from "../assets/CareGuruIcon.png";
+import CareGuruIcon from "../assets/CareGuruIcon.jpeg";
 
 function Navbar({ variant = "dark" }) {
   const navigate = useNavigate();
