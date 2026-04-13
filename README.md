@@ -1,16 +1,123 @@
-# React + Vite
+# 🏥 CareGuru v2 – Smart Healthcare Appointment System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CareGuru v2 is a modern web-based healthcare application designed to simplify hospital discovery, doctor appointment booking, and basic healthcare assistance. The platform integrates real-time scheduling, AI-powered interaction, and cloud-based data management to deliver an efficient and user-friendly experience.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+* 🔐 User Authentication (Patient & Hospital roles)
+* 🏥 Hospital & Doctor Discovery
+* 📅 Ticket-Based Appointment Booking System
+* 🤖 AI-Powered Healthcare Chatbot
+* 📍 Location-Based Hospital Finder
+* 🚨 SOS Emergency Feature (Location + Alerts)
+* 👤 Profile Management System
+* 📊 Real-Time Data Sync using Firebase
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧠 Core Highlights
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Conflict-Free Booking System** using transaction-based ticket allocation
+* **Role-Based Access Control** for patients and hospitals
+* **Cloud Backend (Firebase)** – no traditional server required
+* **Modular Architecture** for scalability and maintainability
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+
+* React.js
+* CSS3
+* React Router
+
+### Backend / Services
+
+* Firebase Authentication
+* Firebase Firestore (NoSQL DB)
+
+### APIs & Integrations
+
+* AI Chatbot API (OpenAI / external AI service)
+* Geolocation API (Browser-based)
+
+## ⚙️ How It Works
+
+1. Users register/login using Firebase Authentication
+2. Browse hospitals and doctors
+3. Select doctor and book appointment
+4. System assigns slot using **ticket-based algorithm**
+5. Appointment stored in Firestore (global + user record)
+6. Users can interact with chatbot or trigger SOS if needed
+
+---
+
+## 🔑 Key Modules
+
+* **Authentication Module** – Secure login & role management
+* **Appointment Module** – Ticket generation & booking logic
+* **Hospital Module** – Doctor & hospital listing
+* **Chatbot Module** – AI-based health assistance
+* **SOS Module** – Emergency location + alert system
+
+---
+
+## 🧪 Testing
+
+* Unit Testing – Core logic (booking, authentication)
+* Integration Testing – API + Firebase interactions
+* System Testing – Full workflow validation
+
+---
+
+## 📊 Performance
+
+* ⚡ Fast response using async operations
+* 🔁 Real-time updates via Firebase
+* ✅ High accuracy in booking & authentication
+
+---
+
+## ⚠️ Limitations
+
+* No payment gateway (yet)
+* Chatbot depends on external API
+* No video consultation feature
+
+---
+
+## 🚀 Future Enhancements
+
+* 💳 Payment Integration (Razorpay/Stripe)
+* 📞 Video Consultation
+* 📱 Mobile App Version
+* 📈 Analytics Dashboard
+* 🔐 Multi-Factor Authentication
+
+---
+
+## 📚 References
+
+Includes research from IEEE, Google Scholar, and healthcare systems on:
+
+* Appointment scheduling
+* AI healthcare systems
+* Hospital locator platforms
+
+---
+
+## 👨‍💻 Author
+
+**Vaishnav Shalikumar**
+Project: CareGuru v2
+
+---
+
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!
+
+---
